@@ -20,10 +20,18 @@ async function run() {
         const ordersCollection = database.collection("orders")
         const reviewsCollection = database.collection("reviews")
         const usersCollection = database.collection("users")
+        const teamsCollection = database.collection("teams")
         // get products
         app.get('/products', async (req, res) => {
             const products = await productsCollection.find({}).toArray()
             res.json(products)
+        })
+        // delete products
+        app.delete('/productDelete/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const productDelete = await productsCollection.deleteOne(filter)
+            res.json(productDelete)
         })
         // add new product api
         app.post('/products', async (req, res) => {
@@ -99,7 +107,6 @@ async function run() {
             const updateDoc = { $set: { status: req.body.status } }
             const statusShipped = await ordersCollection.updateOne(filter, updateDoc)
             res.json(statusShipped)
-            console.log(statusShipped)
         })
         // delete my orders
         app.delete('/myOrders/:id', async (req, res) => {
@@ -107,6 +114,11 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await ordersCollection.deleteOne(query)
             res.json(result)
+        })
+        // get teams
+        app.get('/teams', async (req, res) => {
+            const teams = await teamsCollection.find({}).toArray()
+            res.json(teams)
         })
     }
     finally {
